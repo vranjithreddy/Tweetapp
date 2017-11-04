@@ -41,7 +41,7 @@
          password: $DOCKER_PASSWORD
          # we want to push both the release image and as the latest
          tag: dev-$WERCKER_GIT_COMMIT latest
-         repository: devopscafe/tweet-app
+         repository: ranjithraj2035/tweetapp
          registry: https://registry.hub.docker.com
          ports: 80 443
          cmd: nginx -g 'daemon off';
