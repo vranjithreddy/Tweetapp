@@ -1,0 +1,47 @@
+# This references the default nginx container from
+# the Docker Hub: https://registry.hub.docker.com/ 
+ box: nginx:latest
+ 
+ build:
+   # The steps that will be executed on  build
+   # Steps make up the actions in your pipeline
+   
+   steps:
+
+     # A  custom script step, name value is used in the Wercker-UI
+     # and the code value contains the command that get executed
+     - script:
+         name: installing and testing install of curl
+         code: |
+           apt-get update
+           apt-get install -y curl
+# note the indentation, this is still part of the build pipeline
+   after-steps:                    
+     - slack-notifier:
+         url: $SLACK_URL
+         username: werckerbot
+         channel: notifications
+ push-2-docker:
+   box: nginx:latest
+   
+   steps:
+     - script:
+         name: mv the files required and clean image
+         # include to install packages
+         # make internals avail for next step
+         code: |
+           cd $WERCKER_SOURCE_DIR
+           mv /pipeline/source/index.html /usr/share/nginx/html
+           mv /pipeline/source/linux.png /usr/share/nginx/html
+           apt-get update
+           apt-get install -y curl
+
+     - internal/docker-push:
+         username: $DOCKER_USERNAME
+         password: $DOCKER_PASSWORD
+         # we want to push both the release image and as the latest
+         tag: dev-$WERCKER_GIT_COMMIT latest
+         repository: devopscafe/tweet-app
+         registry: https://registry.hub.docker.com
+         ports: 80 443
+         cmd: nginx -g 'daemon off';
