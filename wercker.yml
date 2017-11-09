@@ -21,7 +21,7 @@
      - slack-notifier:
          url: $SLACK_URL
          username: ranjithraj2035
-         channel: random
+         channel: 
  push-2-docker:
    box: nginx:latest
    
